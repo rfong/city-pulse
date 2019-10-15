@@ -13,3 +13,15 @@ python fetch_yelp_data.py
 This will begin downloading data from the Yelp API
 into the `yelp` folder. See `yelp/settings.py` for the download path
 configuration.
+
+### Transform fetched data into heatmap-palatable format
+
+```
+python datavis_transform.py
+```
+
+### Unit tests
+
+```
+python -m unittest discover
+```
