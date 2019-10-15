@@ -15,7 +15,7 @@ from yelp.settings import *
 
 
 def to_points(
-    value_selector, value_transform_fn=None, ignore_nulls=True,
+    value_selector, value_transform_fn=None, ignore_nulls=False,
     restrict_to_city=None
     ):
     '''
@@ -28,7 +28,18 @@ def to_points(
     '''
     if value_transform_fn is None:
         value_transform_fn = lambda x: x  # Identity function
-    print(set(b.get('location',{}).get('city') for id, b in list(get_business_data().items())))
+
+    def should_keep_biz(biz):
+        # Check if value is null
+        if biz.get(value_selector) is None and not ignore_nulls:
+            return False
+        # Check if city doesn't match
+        if restrict_to_city:
+            if (biz['location']['city'].lower().replace(' ', '') !=
+                restrict_to_city.lower().replace(' ', '')):
+                return False
+        return True
+
     return [
         [
             b['coordinates']['latitude'],
@@ -36,16 +47,16 @@ def to_points(
             value_transform_fn(b.get(value_selector)),
         ]
         for id, b in list(get_business_data().items())
-        if ((not ignore_nulls or value_selector in b) and
-            (b['location']['city'].lower().replace(' ', '') == 
-             restrict_to_city.lower().replace(' ', '')
-             if restrict_to_city else True))
+        if should_keep_biz(b)
     ]
 
-def write_heatmap_points(rel_path, points):
+def write_heatmap_points(rel_path, points, pretty_print=True):
     path = os.path.join(os.path.dirname(__file__), rel_path)
     with open(path, 'w') as f:
-        f.write(json.dumps(points))
+        if pretty_print:
+            pprint.pprint(points, stream=f)
+        else:
+            f.write(json.dumps(points))
 
 
 business_data_cache = None
