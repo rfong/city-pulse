@@ -8,7 +8,6 @@ downloaded.
 
 import json
 import os
-import pprint
 import time
 
 from yelp.settings import *
@@ -50,13 +49,10 @@ def to_points(
         if should_keep_biz(b)
     ]
 
-def write_heatmap_points(rel_path, points, pretty_print=True):
+def write_heatmap_points(rel_path, points):
     path = os.path.join(os.path.dirname(__file__), rel_path)
     with open(path, 'w') as f:
-        if pretty_print:
-            pprint.pprint(points, stream=f)
-        else:
-            f.write(json.dumps(points))
+        f.write(json.dumps(points))
 
 
 business_data_cache = None
