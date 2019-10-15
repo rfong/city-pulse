@@ -4,5 +4,5 @@ Me just playing around with city datavis after reading about factors contributin
 
 ### Thoughts/todos
 
-[ ] The general physical distribution of businesses dominates the actual point values. Maybe try normalizing by density where appropriate?
-[ ] Residency data - SFGov / Trulia
+- [ ] The general physical distribution of businesses dominates the actual point values. Maybe try normalizing by density where appropriate?
+- [ ] Residency data - SFGov / Trulia
