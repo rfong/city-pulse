@@ -27,6 +27,7 @@ class MyError(Enum):
     API_ERROR = 1
     API_EXCEEDED_FETCH_LIMIT = 2
 
+
 # Yelp API constants
 YELP_SEARCH_API_URL = 'https://api.yelp.com/v3/businesses/search'
 
@@ -40,7 +41,7 @@ class Fetcher(object):
 
     def __init__(self, is_test=False):
         tlc = yelp_categories.get_top_level_categories()
-    
+
         if is_test:
             self.progress = ProgressMeter(tempfile.TemporaryFile().name)
             self.search_data_path = tempfile.TemporaryFile().name
@@ -49,7 +50,7 @@ class Fetcher(object):
             self.search_data_path = SEARCH_API_DATA_PATH
 
         self.progress.add_keys(tlc)  # This won't overwrite existing progress
-   
+
     def persist_search_results(self, response_json):
         '''
         Persist data from the Yelp v3/businesses/search API to local JSON.
@@ -69,32 +70,32 @@ class Fetcher(object):
 
     def fetch_all_businesses(self):
         complete_categories = [
-            k for k,v in self.progress.get_data().items()
+            k for k, v in self.progress.get_data().items()
             if v is ProgressStatus.COMPLETE
         ]
         print("complete categories", len(complete_categories))
 
         incomplete_categories = [
-            k for k,v in self.progress.get_data().items()
+            k for k, v in self.progress.get_data().items()
             if v is ProgressStatus.INCOMPLETE
         ]
         print("incomplete categories", len(incomplete_categories))
 
         for cat in incomplete_categories:
-            #search_category = 'convenience'  # 235
-            #search_category = 'food'  # 3500
+            # search_category = 'convenience'  # 235
+            # search_category = 'food'  # 3500
             params = {
                 'location': 'San Francisco',
                 'term': '',
                 'offset': 0,
                 'limit': YELP_REQUEST_FETCH_LIMIT,
-                #'open_at': 1571081461,
+                # 'open_at': 1571081461,
                 'categories': cat,
-                #'pricing_filter': '1, 2',
-                #'sort_by': 'rating',
+                # 'pricing_filter': '1, 2',
+                # 'sort_by': 'rating',
             }
             self.fetch_businesses_by_params(params)
-    
+
     def fetch_businesses_by_params(self, params):
         category = params.get('categories')
 
@@ -114,7 +115,7 @@ class Fetcher(object):
                 'API error - %s' % resp.json()['error'].get('description'))
             pprint.pprint(resp.json())
             return
-    
+
         # Dump business info
         total = resp.json()['total']
         if params['offset'] == 0:
@@ -125,7 +126,7 @@ class Fetcher(object):
 
         # Save data
         self.persist_search_results(resp.json())
-       
+
         # If within API single request limit, return current results.
         if total <= YELP_REQUEST_FETCH_LIMIT:
             self.progress.mark_complete(category)
@@ -139,7 +140,7 @@ class Fetcher(object):
             logger.info("Fetch next page; offset=%d" % params['offset'])
             self.fetch_businesses_by_params(params)
             return
-  
+
         # Otherwise, must narrow down search to get under API limit.
         logger.info("\tExceeded API limit. Narrowing down search.")
         category = params.get('categories', '')
@@ -148,14 +149,14 @@ class Fetcher(object):
         if child_categories is []:
             raise Exception((
                 "Data for category %s cannot be fully fetched because it has "
-                 "no child categories and exceeds API limit"
+                "no child categories and exceeds API limit"
             ) % category)
 
         # Mark parent category as wontfix, and add the new categories to try.
         self.progress.mark_wontfix(category)
         self.progress.add_keys(child_categories)
         return None, []
-            
+
     def multi_fetch_businesses_by_params(self, params, total_results):
         '''
         The number of business results spanned by this request exceeds the
@@ -169,8 +170,7 @@ class Fetcher(object):
             params['offset'] = offset
             print('TODO: Fetch at offset=%d' % offset)
             self.fetch_businesses_by_params(params)
-    
+
 
 def main():
     Fetcher().fetch_all_businesses()
-

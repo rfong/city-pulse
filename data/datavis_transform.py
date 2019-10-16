@@ -16,7 +16,7 @@ from yelp.settings import *
 def to_points(
     value_selector, value_transform_fn=None, ignore_nulls=False,
     restrict_to_city=None
-    ):
+):
     '''
     Transforms business data into a list of points to be used on a map; that
     is, coordinates with an associated value.
@@ -26,7 +26,7 @@ def to_points(
         `[lat, lng, value]`
     '''
     if value_transform_fn is None:
-        value_transform_fn = lambda x: x  # Identity function
+        def value_transform_fn(x): return x  # Identity function
 
     def should_keep_biz(biz):
         # Check if value is null
@@ -35,7 +35,7 @@ def to_points(
         # Check if city doesn't match
         if restrict_to_city:
             if (biz['location']['city'].lower().replace(' ', '') !=
-                restrict_to_city.lower().replace(' ', '')):
+                    restrict_to_city.lower().replace(' ', '')):
                 return False
         return True
 
@@ -49,6 +49,7 @@ def to_points(
         if should_keep_biz(b)
     ]
 
+
 def write_heatmap_points(rel_path, points):
     path = os.path.join(os.path.dirname(__file__), rel_path)
     with open(path, 'w') as f:
@@ -57,6 +58,7 @@ def write_heatmap_points(rel_path, points):
 
 business_data_cache = None
 business_data_cached_path = None
+
 
 def get_business_data(path=None):
     '''
@@ -80,12 +82,12 @@ if __name__ == '__main__':
         'yelp_price_points.json',
         to_points('price', lambda price: len(price), restrict_to_city=city)
     )
-    
+
     write_heatmap_points(
         'yelp_rating_points.json',
         to_points('rating', restrict_to_city=city)
     )
-    
+
     write_heatmap_points(
         'yelp_review_count_points.json',
         to_points('review_count', restrict_to_city=city)

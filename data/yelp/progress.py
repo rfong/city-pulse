@@ -20,7 +20,8 @@ class ProgressStatus:
     # WONTFIX: for example, when we shouldn't try a parameter value again
     # because it exceeds the API limit and its results need to be broken into
     # smaller chunks.
-    WONTFIX = 3 
+    WONTFIX = 3
+
 
 class ProgressMeter():
     '''
@@ -122,4 +123,3 @@ class ProgressMeter():
         except FileNotFoundError:
             pass
         self.add_keys(keys)
-

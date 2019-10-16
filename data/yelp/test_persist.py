@@ -12,6 +12,7 @@ def get_nonexistent_tmp_file_name():
     f.close()  # File is auto deleted
     return fname
 
+
 class TestPersist(unittest.TestCase):
 
     @staticmethod
@@ -44,7 +45,8 @@ class TestPersist(unittest.TestCase):
         obj1 = {'id': '1', 'name': 'name1'}
         obj2 = {'id': '2', 'name': 'name2'}
 
-        update_json_file(fname, [obj1, obj2], update_fn=TestPersist.my_update_fn)
+        update_json_file(fname, [obj1, obj2],
+                         update_fn=TestPersist.my_update_fn)
         with open(fname, 'r') as f:
             # File should have been created and contain data
             read_data = json.loads(f.read())

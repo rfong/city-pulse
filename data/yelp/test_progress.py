@@ -11,6 +11,7 @@ def get_nonexistent_tmp_file_name():
     f.close()  # File is auto deleted
     return fname
 
+
 class TestProgressMeter(unittest.TestCase):
 
     def test_reset(self):
