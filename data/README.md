@@ -1,3 +1,5 @@
+This attempts to cache all biz data for a region from the Yelp API, circumventing the cap of 1000 businesses per category by parametrically subdividing down the category ontology until complete. If the process crashes, any progress made on complete biz categories is saved. Only incomplete biz categories will be retries.
+
 ### Fetch business data from Yelp API
 
 Update your bash profile with your API keys (don't forget to `source` it).
